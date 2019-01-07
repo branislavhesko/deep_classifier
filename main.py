@@ -5,7 +5,7 @@ from time import gmtime, strftime
 from models.vgg_classifier import VGGClassifier
 from models.densenet_classifier import DenseNetClassifier
 from torchvision.models.densenet import densenet169
-from utils.dataloader import AMDloader
+from utils.dataloader_AMD import AMDloader
 import torch
 import torchvision
 
