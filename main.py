@@ -6,11 +6,14 @@ from models.vgg_classifier import VGGClassifier
 from models.densenet_classifier import DenseNetClassifier
 from torchvision.models.densenet import densenet169
 from utils.dataloader_AMD import AMDloader
+from utils.dataloader_OCT import get_dataloaders_and_sizes
 import torch
 import torchvision
 
 from train import train
 
+
+"""
 images = glob.glob("./data/AMD/*.jpg")
 random.shuffle(images)
 classes = ["nonAMD", "AMD"]
@@ -33,15 +36,20 @@ transforms_val = torchvision.transforms.Compose([
 
 dataloader = AMDloader(images[:320], ["nonAMD", "AMD"], transforms)
 dataloader_val = AMDloader(images[320:], ["nonAMD", "AMD"], transforms_val)
+"""
 
-# model = VGGClassifier(len(classes))
-model = DenseNetClassifier(num_classes=2, pretrained=True)
+#model = VGGClassifier(4)
+model = DenseNetClassifier(num_classes=4, pretrained=True)
 # model.build_whole_classifier(image_size)
 print(model)
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-4)
+optimizer_ft = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+exp_lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
 loss_fn = torch.nn.CrossEntropyLoss()
+folders = ["train", "val", "test"]
 
-train(501, model, dataloader, dataloader_val, optimizer, loss_fn, None, False)
+dataloaders, datasizes =  get_dataloaders_and_sizes((224, 224), folders)
+
+train(10, model, dataloaders[folders[0]], dataloaders[folders[2]], optimizer_ft, loss_fn, None, True)
 
 model_save_path = "./model_weights"
 if not os.path.exists(model_save_path):

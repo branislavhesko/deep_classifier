@@ -10,6 +10,7 @@ class DenseNetClassifier(torch.nn.Module):
         self.densenet = densenet169(pretrained)
         self._num_classes = num_classes
         set_parameter_requires_grad(self.densenet, True)
+        self._build_last_layer()
 
     def _build_last_layer(self):
         in_features = self.densenet.classifier.in_features
