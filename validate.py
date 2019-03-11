@@ -26,4 +26,4 @@ def validate(model, dataloader, loss_fn, is_cuda_available=False):
         prediction = torch.argmax(output, 1)
         validating_accuracy += torch.sum(prediction == labels)
 
-    print("Achieved accuracy: {}/{}, with loss: {}".format(int(validating_accuracy), len(dataloader), validating_loss))
+    print("Achieved accuracy: {}/{}, with loss: {}".format(int(validating_accuracy), len(dataloader) * dataloader.batch_size, validating_loss))

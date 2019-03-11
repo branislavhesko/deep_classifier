@@ -50,7 +50,7 @@ folders = ["train", "val", "test"]
 
 dataloaders, datasizes =  get_dataloaders_and_sizes((224, 224), folders)
 
-train(10, model, dataloaders[folders[0]], dataloaders[folders[2]], optimizer_ft, loss_fn, None, True)
+train(10, model, dataloaders[folders[0]], dataloaders[folders[1]], optimizer_ft, loss_fn, None, True)
 
 model_save_path = "./model_weights"
 if not os.path.exists(model_save_path):
