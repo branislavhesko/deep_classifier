@@ -4,11 +4,12 @@ from torchvision.models import alexnet
 from tqdm import tqdm
 
 
-def predict(model, test_loader, loss_fn, cuda_available):
+def predict(model, test_loader, loss_fn, cuda_available, available_classes=None):
     model.eval()
 
     pred_acc = 0
     pred_loss = 0
+    unsuccessful = []
 
     for data in tqdm(test_loader):
         image, labels = data
@@ -22,6 +23,12 @@ def predict(model, test_loader, loss_fn, cuda_available):
         pred_loss += loss_fn(output, labels).cpu().item()
         prediction = torch.argmax(output, 1)
         pred_acc += torch.sum(prediction == labels)
+
+        if available_classes is not None:
+            for i in range(test_loader.batch_size):
+                if prediction[i, :] != labels[i, :]:
+                    unsuccessful.append(image[i, :, :].cpu().numpy())
+
         torch.cuda.empty_cache()
     total_num_images = test_loader.batch_size * len(test_loader)
     print("Mean loss per image: {}, prediction_accuracy: {}/{}".format(
@@ -29,6 +36,7 @@ def predict(model, test_loader, loss_fn, cuda_available):
 
 
 if __name__ == "__main__":
+    available_classes = ["CNV", "DME", "DRUSEN", "NORMAL"]
     folders = ["train", "val", "test"]
     data_loaders, data_sizes = get_dataloaders_and_sizes(
         (224, 224), folders)

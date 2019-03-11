@@ -11,12 +11,12 @@ def show_predictions(images, predictions, ground_truths, file_to_save):
         ax.set_title("PRED: {} | GT: {}".format(prediction, gt))
         ax.imshow(images[index])
 
-    plt.savefig(file_to_save)
+    plt.savefig(file_to_save, bbox_inches="tight")
     plt.close()
 
 
 if __name__ == "__main__":
     import cv2
-    image = cv2.imread("./N0311.jpg", cv2.IMREAD_COLOR)
+    image = cv2.imread("./alexnet.png", cv2.IMREAD_COLOR)
 
     show_predictions([image] * 5, ["NONE"] * 5, ["AA"] * 5, "skuska.png")
