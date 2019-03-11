@@ -18,7 +18,6 @@ images = glob.glob("./data/AMD/*.jpg")
 random.shuffle(images)
 classes = ["nonAMD", "AMD"]
 
-image_size = (224, 224)
 
 transforms = torchvision.transforms.Compose([
     torchvision.transforms.RandomVerticalFlip(),
@@ -39,9 +38,11 @@ dataloader_val = AMDloader(images[320:], ["nonAMD", "AMD"], transforms_val)
 """
 
 # model = VGGClassifier(4)
-# model = DenseNetClassifier(num_classes=4, pretrained=True)
-model = alexnet(True)
-# model.build_whole_classifier(image_size)
+model = DenseNetClassifier(num_classes=4, pretrained=True)
+# model = alexnet(True)
+image_size = (224, 224)
+
+#model.build_whole_classifier(image_size)
 print(model)
 optimizer_ft = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 exp_lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
@@ -56,4 +57,4 @@ model_save_path = "./model_weights"
 if not os.path.exists(model_save_path):
     os.mkdir(model_save_path)
 
-torch.save(model.state_dict(), os.path.join(model_save_path, strftime("%d_%d_%y-%H_%M_%S.pth", gmtime())))
+torch.save(model.state_dict(), os.path.join(model_save_path, strftime("%d_%m_%y-%H_%M_%S.pth", gmtime())))

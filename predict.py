@@ -32,7 +32,7 @@ if __name__ == "__main__":
     folders = ["train", "val", "test"]
     data_loaders, data_sizes = get_dataloaders_and_sizes(
         (224, 224), folders)
-    test_loader = data_loaders[folders[2]]
+    test_loader = data_loaders[folders[1]]
     weight_path = "./model_weights/10_10_19-23_16_34.pth"
     model = alexnet(True)
     model.load_state_dict(torch.load(weight_path))
