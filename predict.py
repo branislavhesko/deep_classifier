@@ -25,13 +25,17 @@ def predict(model, test_loader, loss_fn, cuda_available):
         torch.cuda.empty_cache()
     total_num_images = test_loader.batch_size * len(test_loader)
     print("Mean loss per image: {}, prediction_accuracy: {}/{}".format(
-        loss_fn / total_num_images, pred_acc, total_num_images))
+        pred_loss / total_num_images, pred_acc, total_num_images))
 
 
 if __name__ == "__main__":
+    folders = ["train", "val", "test"]
     data_loaders, data_sizes = get_dataloaders_and_sizes(
-        (224, 224), ["train", "val", "test"])
-    test_loader = data_loaders[2]
-    weight_path = "./model_weights/"
+        (224, 224), folders)
+    test_loader = data_loaders[folders[2]]
+    weight_path = "./model_weights/10_10_19-23_16_34.pth"
     model = alexnet(True)
-    model.load_state_dict(weight_path)
+    model.load_state_dict(torch.load(weight_path))
+    model.cuda()
+
+    predict(model, test_loader, torch.nn.CrossEntropyLoss(), True)
