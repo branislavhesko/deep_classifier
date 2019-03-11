@@ -8,7 +8,7 @@ from torchvision.models.densenet import densenet169
 from utils.dataloader_AMD import AMDloader
 from utils.dataloader_OCT import get_dataloaders_and_sizes
 import torch
-import torchvision
+from torchvision.models import alexnet
 
 from train import train
 
@@ -38,8 +38,9 @@ dataloader = AMDloader(images[:320], ["nonAMD", "AMD"], transforms)
 dataloader_val = AMDloader(images[320:], ["nonAMD", "AMD"], transforms_val)
 """
 
-#model = VGGClassifier(4)
-model = DenseNetClassifier(num_classes=4, pretrained=True)
+# model = VGGClassifier(4)
+# model = DenseNetClassifier(num_classes=4, pretrained=True)
+model = alexnet(True)
 # model.build_whole_classifier(image_size)
 print(model)
 optimizer_ft = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
@@ -55,4 +56,4 @@ model_save_path = "./model_weights"
 if not os.path.exists(model_save_path):
     os.mkdir(model_save_path)
 
-torch.save(os.path.join(model_save_path, strftime("%d_%d_%y-%H_%M_%S.pth", gmtime())))
+torch.save(model.state_dict(), os.path.join(model_save_path, strftime("%d_%d_%y-%H_%M_%S.pth", gmtime())))
