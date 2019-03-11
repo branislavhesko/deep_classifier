@@ -19,11 +19,13 @@ def validate(model, dataloader, loss_fn, is_cuda_available=False):
             labels = (torch.autograd.Variable(labels).cuda())
 
         output = model(image)
-        #print(labels)
-        #print(output)
+        # print(labels)
+        # print(output)
         loss = loss_fn(output, labels)
         validating_loss += loss.cpu().item()
         prediction = torch.argmax(output, 1)
         validating_accuracy += torch.sum(prediction == labels)
 
-    print("Achieved accuracy: {}/{}, with loss: {}".format(int(validating_accuracy), len(dataloader) * dataloader.batch_size, validating_loss))
+    print("Achieved accuracy: {}/{}, with loss: {}".format(
+        int(validating_accuracy), len(dataloader) * dataloader.batch_size,
+        validating_loss / len(dataloader) * dataloader.batch_size))
