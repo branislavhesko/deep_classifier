@@ -37,7 +37,7 @@ dataloader = AMDloader(images[:320], ["nonAMD", "AMD"], transforms)
 dataloader_val = AMDloader(images[320:], ["nonAMD", "AMD"], transforms_val)
 """
 
-# model = VGGClassifier(4)
+#model = VGGClassifier(4)
 model = DenseNetClassifier(num_classes=4, pretrained=True)
 # model = alexnet(True)
 image_size = (224, 224)
