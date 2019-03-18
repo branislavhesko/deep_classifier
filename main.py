@@ -6,7 +6,7 @@ from models.vgg_classifier import VGGClassifier
 from models.densenet_classifier import DenseNetClassifier
 from torchvision.models.densenet import densenet169
 from utils.dataloader_AMD import AMDloader
-from utils.dataloader_OCT import get_dataloaders_and_sizes
+from utils.dataloader_PALM import get_dataloaders_and_sizes
 import torch
 from torchvision.models import alexnet
 
@@ -38,8 +38,9 @@ dataloader_val = AMDloader(images[320:], ["nonAMD", "AMD"], transforms_val)
 """
 
 #model = VGGClassifier(4)
-model = DenseNetClassifier(num_classes=4, pretrained=True)
-# model = alexnet(True)
+#weight_path = "./model_weights/13_03_19-11_04_12.pth"
+model = DenseNetClassifier(2, pretrained=True)
+#model.load_state_dict(torch.load(weight_path))# model = alexnet(True)
 image_size = (224, 224)
 
 #model.build_whole_classifier(image_size)
@@ -47,11 +48,11 @@ print(model)
 optimizer_ft = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 exp_lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
 loss_fn = torch.nn.CrossEntropyLoss()
-folders = ["train", "val", "test"]
+folders = ["train", "validate"]
 
-dataloaders, datasizes =  get_dataloaders_and_sizes((224, 224), folders)
+dataloaders, datasizes = get_dataloaders_and_sizes((224, 224), folders)
 
-train(10, model, dataloaders[folders[0]], dataloaders[folders[1]], optimizer_ft, loss_fn, None, True)
+train(50, model, dataloaders[folders[0]], dataloaders[folders[1]], optimizer_ft, loss_fn, None, True)
 
 model_save_path = "./model_weights"
 if not os.path.exists(model_save_path):
