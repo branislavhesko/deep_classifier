@@ -22,6 +22,7 @@ class ODIRDataset:
     LEFT_SUFFIX = "left"
     RIGHT_SUFFIX = "right"
     IMAGES_FOLDER = "images"
+    NUM_CLASSES = 8
 
     class Pathology(Enum):
         NORMAL = 0
@@ -33,8 +34,9 @@ class ODIRDataset:
         MYOPIA = 6
         OTHER = 7
 
-    def __init__(self, num_classes=8):
+    def __init__(self, image_size):
         self._base_path = None
+        self._image_size = image_size
         self.data = {
             self.DataProps.IMAGE_PATH: [],
             self.DataProps.LABEL: [],
@@ -83,11 +85,14 @@ class ODIRDataset:
         left = cv2.imread(os.path.join(self._base_path, self.IMAGES_FOLDER, self.data[self.DataProps.IMAGE_PATH].loc[index, "Left-Fundus"]), cv2.IMREAD_COLOR)[:, :, ::-1]
         right = cv2.imread(os.path.join(self._base_path, self.IMAGES_FOLDER, self.data[self.DataProps.IMAGE_PATH].loc[index, "Right-Fundus"]), cv2.IMREAD_COLOR)[:, :, ::-1]
         label = np.array(self.data[self.DataProps.LABEL].iloc[index, :])
+        label = np.argmax(label)
+        left = cv2.resize(left, self._image_size)
+        right = cv2.resize(right, self._image_size)
         image = np.concatenate((left, right), axis=2)
-        return image, label
+        return torch.from_numpy(image).permute([2, 0, 1]).float(), torch.tensor(label)
 
 
 if __name__ == "__main__":
-    odir = ODIRDataset(8)
+    odir = ODIRDataset((224, 224))
     odir.load("./data")
-    odir.show_images_at_index(105)
+    odir.show_images_at_index(1000)
