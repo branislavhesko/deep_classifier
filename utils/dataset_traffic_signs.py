@@ -40,6 +40,13 @@ class TrafficSignDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         label = torch.Tensor([self._dataset[index][DatasetKeys.LABEL]]).long()
-        image = np.array(Image.open(self._dataset[index][DatasetKeys.IMAGE]))
+        image = np.array(Image.open(self._dataset[index][DatasetKeys.IMAGE])) / 255.
         image = self._transform(image)
         return torch.from_numpy(image).permute([2, 0, 1]), label
+
+
+def get_dataloader(base_path, num_classes, transform, num_workers=8, batch_size=8):
+    dataset = TrafficSignDataset(base_path, num_classes, transform)
+    dataloader = torch.utils.data.DataLoader(dataset, num_workers=8, batch_size=8)
+    return dataloader
+
