@@ -8,6 +8,7 @@ import torch
 
 class DatasetKeys:
     LABEL = auto()
+    INDEX = auto()
     IMAGE = auto()
 
 
@@ -19,7 +20,6 @@ class TrafficSignDataset(torch.utils.data.Dataset):
         self._base_path = base_path
         self._num_classes = num_classes
         self._dataset = []
-        self._label_map = {}
         self._transform = transform
 
     def load(self):
@@ -28,25 +28,31 @@ class TrafficSignDataset(torch.utils.data.Dataset):
         dataset = {}
         for folder in folders:
             dataset[folder] = glob.glob(os.path.join(self._base_path, folder, "*." + self.EXTENSION))
+        counter = 0
         for idx, class_ in enumerate(dataset.keys()):
-            self._dataset.append({
-                DatasetKeys.LABEL: class_,
-                DatasetKeys.IMAGE: dataset[class_]
-            })
-            self._label_map[class_] = idx
+            for item in dataset[class_]:
+                self._dataset.append({
+                    DatasetKeys.LABEL: class_,
+                    DatasetKeys.IMAGE: item,
+                    DatasetKeys.INDEX: idx
+                })
+                counter += 1
+        return self._dataset
 
     def __len__(self):
         return len(self._dataset)
 
     def __getitem__(self, index):
-        label = torch.Tensor([self._dataset[index][DatasetKeys.LABEL]]).long()
-        image = np.array(Image.open(self._dataset[index][DatasetKeys.IMAGE])) / 255.
+        label = torch.Tensor([self._dataset[index][DatasetKeys.INDEX]]).long()
+        image = Image.open(self._dataset[index][DatasetKeys.IMAGE])
         image = self._transform(image)
-        return torch.from_numpy(image).permute([2, 0, 1]), label
+        return image, label
 
 
-def get_dataloader(base_path, num_classes, transform, num_workers=8, batch_size=8):
+def get_dataloader(base_path, num_classes, transform, 
+                   num_workers=4, batch_size=8, shuffle=False):
     dataset = TrafficSignDataset(base_path, num_classes, transform)
-    dataloader = torch.utils.data.DataLoader(dataset, num_workers=8, batch_size=8)
+    dataset.load()
+    dataloader = torch.utils.data.DataLoader(dataset, num_workers=4, batch_size=batch_size, shuffle=shuffle)
     return dataloader
 

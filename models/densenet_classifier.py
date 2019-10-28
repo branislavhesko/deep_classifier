@@ -11,7 +11,7 @@ class DenseNetClassifier(torch.nn.Module):
         self._num_classes = num_classes
         set_parameter_requires_grad(self.densenet, True)
         self._build_last_layer()
-        self.densenet.features.conv0 = torch.nn.Conv2d(6, 64, kernel_size=7, stride=2, padding=3)
+        self.densenet.features.conv0 = torch.nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3)
         torch.nn.init.xavier_uniform_(self.densenet.features.conv0.weight)
 
     def _build_last_layer(self):
