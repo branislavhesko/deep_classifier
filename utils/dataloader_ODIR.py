@@ -82,8 +82,10 @@ class ODIRDataset:
         return len(self.data[self.DataProps.IMAGE_PATH])
 
     def __getitem__(self, index):
-        left = cv2.imread(os.path.join(self._base_path, self.IMAGES_FOLDER, self.data[self.DataProps.IMAGE_PATH].loc[index, "Left-Fundus"]), cv2.IMREAD_COLOR)[:, :, ::-1]
-        right = cv2.imread(os.path.join(self._base_path, self.IMAGES_FOLDER, self.data[self.DataProps.IMAGE_PATH].loc[index, "Right-Fundus"]), cv2.IMREAD_COLOR)[:, :, ::-1]
+        left = cv2.imread(os.path.join(self._base_path, self.IMAGES_FOLDER, self.data[
+            self.DataProps.IMAGE_PATH].loc[index, "Left-Fundus"]), cv2.IMREAD_COLOR)[:, :, ::-1]
+        right = cv2.imread(os.path.join(self._base_path, self.IMAGES_FOLDER, self.data[
+            self.DataProps.IMAGE_PATH].loc[index, "Right-Fundus"]), cv2.IMREAD_COLOR)[:, :, ::-1]
         label = np.array(self.data[self.DataProps.LABEL].iloc[index, :])
         label = np.argmax(label)
         left = cv2.resize(left, self._image_size)

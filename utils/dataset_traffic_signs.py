@@ -23,10 +23,10 @@ class TrafficSignDataset(torch.utils.data.Dataset):
         self._transform = transform
 
     def load(self):
-        folders = next(os.walk(self._base_path))[1]
-        assert self._num_classes == len(folders)
+        self.folders = sorted(next(os.walk(self._base_path))[1])
+        assert self._num_classes == len(self.folders)
         dataset = {}
-        for folder in folders:
+        for folder in self.folders:
             dataset[folder] = glob.glob(os.path.join(self._base_path, folder, "*." + self.EXTENSION))
         counter = 0
         for idx, class_ in enumerate(dataset.keys()):
@@ -46,13 +46,12 @@ class TrafficSignDataset(torch.utils.data.Dataset):
         label = torch.Tensor([self._dataset[index][DatasetKeys.INDEX]]).long()
         image = Image.open(self._dataset[index][DatasetKeys.IMAGE])
         image = self._transform(image)
-        return image, label
+        return image, label, self._dataset[index][DatasetKeys.LABEL]
 
 
-def get_dataloader(base_path, num_classes, transform, 
+def get_dataloader(base_path, num_classes, transform,
                    num_workers=4, batch_size=8, shuffle=False):
     dataset = TrafficSignDataset(base_path, num_classes, transform)
     dataset.load()
     dataloader = torch.utils.data.DataLoader(dataset, num_workers=4, batch_size=batch_size, shuffle=shuffle)
-    return dataloader
-
+    return dataloader, dataset

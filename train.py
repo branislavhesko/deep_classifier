@@ -21,7 +21,6 @@ def train(num_epochs, model, dataloader, dataloader_val, optimizer, loss_fn,
         train_loss = 0.
         for data in tqdm.tqdm(dataloader):
             image, labels = data
-            #print(image.size())
             optimizer.zero_grad()
 
             if is_cuda_available:
@@ -34,7 +33,6 @@ def train(num_epochs, model, dataloader, dataloader_val, optimizer, loss_fn,
 
             train_loss += loss.cpu().item()
             prediction = torch.argmax(output, 1)
-            #print("Predicted: {}".format("AMD" if bool(prediction) else "nonAMD"))
             train_acc += torch.sum(prediction == labels)
             torch.cuda.empty_cache()
 
