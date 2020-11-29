@@ -13,3 +13,5 @@ utils/__pycache__/
 /pretrained_weights
 *.png
 vgg16-transfer-learning-pytorch.ipynb
+w.pth
+runs/*
